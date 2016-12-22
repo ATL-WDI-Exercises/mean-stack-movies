@@ -51,27 +51,107 @@ git tag step1
 
 ---
 
-## Step 2: Add Mongoose, Angular, and Angular UI Router to our Project
+## Step 2: Add Mongoose to our Project
 
 ```bash
 npm install --save mongoose
-npm install --save angular
-npm install --save angular-ui-router
 ```
 
 Add the following to `app.js`:
 
 ```javascript
+...
+
+var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
+
+...
+
+// Connect to database
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI);
+}
+else {
+  mongoose.connect('mongodb://localhost/mean-movies');
+}
+mongoose.connection.on('error', function(err) {
+  console.error('MongoDB connection error: ' + err);
+  process.exit(-1);
+  }
+);
+mongoose.connection.once('open', function() {
+  console.log("Mongoose has connected to MongoDB!");
+});
+```
+
+Save your work:
+
+```bash
+git add -A
+git commit -m "Added Mongoose"
+git tag step2
+```
+
+---
+
+## Step 3: Create a Movies Mongoose Model and a Seeds file
+
+3a. The Mongoose Model
+
+```bash
+mkdir models
+touch models/movie.js
+```
+
+Put the following code inside `models/movie.js`:
+
+```javascript
+{{ models/movie.js }}
+```
+
+3b. The Seeds File
+
+```bash
+touch seeds.js
+```
+
+Put the following code inside `seeds.js`:
+
+```javascript
+{{ seeds.js }}
+```
+
+Test out the seeds file:
+
+```bash
+node seeds.js
+```
+
+3c. Save your work:
+
+```bash
+git add -A
+git commit -m "Added Mongoose Movie model and seeds file."
+git tag step3
+```
+
+## Step 4: 
+
+4a. Add Some Movie Routes
+
+```bash
+touch routes/movies.js
 
 ```
 
-
 ---
 
-## Step 2
+## Leftovers
+
+npm install --save angular
+npm install --save angular-ui-router
 
 
----
 
 ## Summary
 
