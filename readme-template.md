@@ -135,14 +135,70 @@ git commit -m "Added Mongoose Movie model and seeds file."
 git tag step3
 ```
 
-## Step 4: 
+## Step 4: Add Some Movie Routes
+
+Let's add an `INDEX` and a `SHOW` route for our Movies. Each route will return JSON data.
 
 4a. Add Some Movie Routes
 
 ```bash
 touch routes/movies.js
-
 ```
+
+Add the following content to `routes/movies.js`:
+
+```javascript
+{{ routes/movies.js }}
+```
+
+4b. Add the Movies Router to `app.js`:
+
+```javascript
+/**
+  * Using an 'api' prefix here is a nice convention!
+  * We can put all of our JSON data routes under '/api/'
+**/ 
+app.use('/api/movies', movies);
+```
+
+4c. Start up the server and test out the Movie routes:
+
+First let's edit `package.json` and add a `nodemon` script:
+
+```javascript
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
+  },
+```
+
+```bash
+npm run dev
+```
+
+4d. Test with browser
+
+Point your browser to `http://localhost:3000/api/movies`
+Then try `http://localhost:3000/api/movies/<some-movie-id>`
+
+4e. Test with `httpie`:
+
+```bash
+http localhost:3000/api/movies
+http localhost:3000/api/movies/<some-movie-id>
+```
+
+4f. Save your work:
+
+```bash
+git add -A
+git commit -m "Added Movie INDEX and SHOW routes."
+git tag step4
+```
+
+## Step 5: Add Angular
+
+
 
 ---
 
