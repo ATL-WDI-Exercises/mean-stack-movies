@@ -20,7 +20,7 @@ Let's build a MEAN stack app for doing CRUD with movies.
 * [Step 3: Create a Movies Mongoose Model and a Seeds file](#step-3-create-a-movies-mongoose-model-and-a-seeds-file)
 * [Step 4: Add Some Movie Routes](#step-4-add-some-movie-routes)
 * [Step 5: Add Angular](#step-5-add-angular)
-* [Step 6: Add Client Code to Get Movies Data from Server](#step-6-add-client-code-to-get-movies-data-from-server)
+* [Step 6: Add INDEX and SHOW Client-Side Movie Routes](#step-6-add-index-and-show-client-side-movie-routes)
 
 ---
 
@@ -352,14 +352,56 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
     controller: 'aboutCtrl',
     controllerAs: '$ctrl'
   });
+  $stateProvider
+  .state('movies', {
+    url: '/movies',
+    templateUrl: '/templates/movies/index.html',
+    controller: 'moviesCtrl',
+    controllerAs: '$ctrl'
+  });
+  $stateProvider
+  .state('movieDetail', {
+    url: '/movies/:id',
+    templateUrl: '/templates/movies/show.html',
+    controller: 'moviesDetailCtrl',
+    controllerAs: '$ctrl'
+  });
   $urlRouterProvider.otherwise("/");
   // $locationProvider.html5Mode({ enabled: true, requireBase: false });
+});
+app.service('moviesService', function($http) {
+  console.log('moviesService is alive!');
+  this.getMovies = function() {
+    return $http.get('/api/movies');
+  };
+  this.getMovie = function(id) {
+    return $http.get('/api/movies/' + id);
+  };
 });
 app.controller('homeCtrl', function() {
   this.title = 'Welcome to My Movies App';
 });
 app.controller('aboutCtrl', function() {
+  console.log('aboutCtrl is alive!');
   this.title = 'About my Movies App';
+});
+app.controller('moviesCtrl', function(moviesService) {
+  console.log('moviesCtrl is alive!');
+  this.movies = [];
+  moviesService.getMovies()
+  .then( (response) => {
+    this.movies = response.data.movies;
+  })
+  .catch(function(err) {
+    console.log('ERROR:', err);
+  });
+});
+app.controller('moviesDetailCtrl', function($stateParams, moviesService) {
+  console.log('moviesDetailCtrl is alive!');
+  moviesService.getMovie($stateParams.id)
+  .then( (response) => {
+    this.movie = response.data.movie;
+  });
 });
 ```
 
@@ -377,6 +419,8 @@ html(ng-app="moviesApp")
     nav
       button
         a(ui-sref='home') Home
+      button
+        a(ui-sref='movies') Movies
       button
         a(ui-sref='about') About
     main(ui-view='')
@@ -427,6 +471,112 @@ git tag step5
 
 ---
 
-## Step 6: Add Client Code to Get Movies Data from Server
+## Step 6: Add INDEX and SHOW Client-Side Movie Routes
 
-Coming Soon!!!
+6a. Add the following code to the route configuration in `client.js`:
+
+```javascript
+$stateProvider
+.state('movies', {
+  url: '/movies',
+  templateUrl: '/templates/movies/index.html',
+  controller: 'moviesCtrl',
+  controllerAs: '$ctrl'
+});
+$stateProvider
+.state('movieDetail', {
+  url: '/movies/:id',
+  templateUrl: '/templates/movies/show.html',
+  controller: 'moviesDetailCtrl',
+  controllerAs: '$ctrl'
+});
+```
+
+6b. Add a `moviesService` to `client.js` (add this code before the controllers):
+
+```javascript
+app.service('moviesService', function($http) {
+  console.log('moviesService is alive!');
+  this.getMovies = function() {
+    return $http.get('/api/movies');
+  };
+  this.getMovie = function(id) {
+    return $http.get('/api/movies/' + id);
+  };
+});
+```
+
+6c. Add the `moviesCtrl` and `moviesDetailCtrl` to `client.js`:
+
+```javascript
+app.controller('moviesCtrl', function(moviesService) {
+  console.log('moviesCtrl is alive!');
+  this.movies = [];
+  moviesService.getMovies()
+  .then( (response) => {
+    this.movies = response.data.movies;
+  })
+  .catch(function(err) {
+    console.log('ERROR:', err);
+  });
+});
+app.controller('moviesDetailCtrl', function($stateParams, moviesService) {
+  console.log('moviesDetailCtrl is alive!');
+  moviesService.getMovie($stateParams.id)
+  .then( (response) => {
+    this.movie = response.data.movie;
+  });
+});
+```
+
+6d. Create the movies index and movies show templates:
+
+```bash
+mkdir public/templates/movies
+touch public/templates/movies/index.html
+touch public/templates/movies/show.html
+```
+
+6e. Put the following content into `public/templates/movies/index.html`:
+
+```html
+<h1>My Favorite Movies</h1>
+
+<ul>
+  <li ng-repeat="movie in $ctrl.movies">
+    <a ui-sref="movieDetail({id: movie._id})">{{ movie.title }} - {{ movie.genre }}</a>
+  </li>
+</ul>
+```
+
+6f. Put the following content into `public/templates/movies/show.html`:
+
+```html
+<h1>{{ $ctrl.movie.title }}</h1>
+<p>This movie has a genre of {{ $ctrl.movie.genre }}</p>
+<hr>
+<button><a ui-sref="movies">Back</button>
+```
+
+6g. Add a button to the NavBar for our Movies route:
+
+Edit `views/layout.pug` and add:
+
+```pug
+button
+  a(ui-sref='movies') Movies
+```
+
+6h. Test it out
+
+Use your browser to test out the movies INDEX and SHOW routes.
+
+6i. Save your work:
+
+```bash
+git add -A
+git commit -m "Added INDEX and SHOW Client-Side Movie Routes."
+git tag step6
+```
+
+---
