@@ -198,54 +198,65 @@ git tag step4
 
 ## Step 5: Add Angular
 
+5a. Install the Angular and Angular UI Router modules:
 
-
----
-
-## Leftovers
-
+```bash
 npm install --save angular
 npm install --save angular-ui-router
+```
 
+5b. Add the main Client-Side JavaScript file:
 
+```bash
+touch public/javascripts/client.js`
+```
 
-## Summary
+Add the following content to `public/javascripts/client.js`:
 
-Summarize what we have learned.
+```javascript
+{{ public/javascripts/client.js }}
+```
+
+The above code defines our client-side routes (states) and our controllers.
+
+5c. Wireup `layout.pug` to include our Client-Side scripts and bootstrap Angular::
+
+```pug
+{{ views/layout.pug }}
+```
+
+5d. Create our `home` and `about` templates:
+
+```bash
+mkdir public/templates
+touch public/templates/home.html
+touch public/templates/about.html
+```
+
+The content of `public/templates/home.html`:
+
+```html
+{{ public/templates/home.html }}
+```
+
+The content of `public/templates/about.html`:
+
+```html
+{{ public/templates/about.html }}
+```
+
+5e. Test it out
+
+5f. Save your work
+
+```bash
+git add -A
+git commit -m "Added Angular and UI Router."
+git tag step5
+```
 
 ---
 
-## Quiz Questions
+## Step 6: Add Client Code to Get Movies Data from Server
 
-List quiz questions with answers here. For example:
-
-<details>
-  <summary><strong>Q1: What is 1 + 2?</strong></summary>
-  > A: 3
-</details>
-
-
-<details>
-  <summary><strong>Q1: What is 3 * 5?</strong></summary>
-  > A: 15
-</details>
-
-
-<details>
-  <summary><strong>Q1: What is 100 / 20?</strong></summary>
-  > A: 5
-</details>
-
-
-## Homework
-
-List links to sample Homework assignments.
-
-
-## For Further Reading
-
-List some resources here. For example:
-
-* [Markdown](https://daringfireball.net/projects/markdown/)
-* [Markdown Wikipedia Page](https://en.wikipedia.org/wiki/Markdown)
-* [Markdown Cheat Sheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+Coming Soon!!!

@@ -1,7 +1,16 @@
 doctype html
-html
+html(ng-app="moviesApp")
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    nav
+      button
+        a(ui-sref='home') Home
+      button
+        a(ui-sref='about') About
+    main(ui-view='')
     block content
+    script(src='/angular/angular.min.js', charset='utf-8')
+    script(src='/angular-ui-router/release/angular-ui-router.min.js', charset='utf-8')
+    script(src='/javascripts/client.js')
