@@ -270,10 +270,16 @@ module.exports = router;
 4b. Add the Movies Router to `app.js`:
 
 ```javascript
+...
+
+var movies = require('./routes/movies');
+
+...
+
 /**
   * Using an 'api' prefix here is a nice convention!
   * We can put all of our JSON data routes under '/api/'
-**/ 
+**/
 app.use('/api/movies', movies);
 ```
 
@@ -324,7 +330,7 @@ npm install --save angular-ui-router
 5b. Add the main Client-Side JavaScript file:
 
 ```bash
-touch public/javascripts/client.js`
+touch public/javascripts/client.js
 ```
 
 Add the following content to `public/javascripts/client.js`:
@@ -380,7 +386,16 @@ html(ng-app="moviesApp")
     script(src='/javascripts/client.js')
 ```
 
-5d. Create our `home` and `about` templates:
+5d. Add `node_modules` as a static path to Express
+
+We need Express to farm out our `node_modules` client dependencies for us.
+Add the following line to `app.js` after the line that adds the `public` static path:
+
+```javascript
+app.use(express.static(path.join(__dirname, 'node_modules')));
+```
+
+5e. Create our `home` and `about` templates:
 
 ```bash
 mkdir public/templates
@@ -400,9 +415,9 @@ The content of `public/templates/about.html`:
 <h1>{{ $ctrl.title }}</h1>
 ```
 
-5e. Test it out
+5f. Test it out
 
-5f. Save your work
+5g. Save your work
 
 ```bash
 git add -A
