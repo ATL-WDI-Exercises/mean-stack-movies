@@ -30,7 +30,6 @@ mongoose.connection.once('open', function() {
   console.log("Mongoose has connected to MongoDB!");
 });
 
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -50,7 +49,7 @@ app.use('/users', users);
   * Using an 'api' prefix here is a nice convention!
   * We can put all of our JSON data routes under '/api/'
 **/
-app.use('/api/movies', movies);   // using an 'api' prefix here is a nice convention!
+app.use('/api/movies', movies);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

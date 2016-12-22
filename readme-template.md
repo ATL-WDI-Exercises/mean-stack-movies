@@ -272,6 +272,103 @@ git tag step5
 
 ---
 
-## Step 6: Add Client Code to Get Movies Data from Server
+## Step 6: Add INDEX and SHOW Client-Side Movie Routes
 
-Coming Soon!!!
+6a. Add the following code to the route configuration in `client.js`:
+
+```javascript
+$stateProvider
+.state('movies', {
+  url: '/movies',
+  templateUrl: '/templates/movies/index.html',
+  controller: 'moviesCtrl',
+  controllerAs: '$ctrl'
+});
+$stateProvider
+.state('movieDetail', {
+  url: '/movies/:id',
+  templateUrl: '/templates/movies/show.html',
+  controller: 'moviesDetailCtrl',
+  controllerAs: '$ctrl'
+});
+```
+
+6b. Add a `moviesService` to `client.js` (add this code before the controllers):
+
+```javascript
+app.service('moviesService', function($http) {
+  console.log('moviesService is alive!');
+  this.getMovies = function() {
+    return $http.get('/api/movies');
+  };
+  this.getMovie = function(id) {
+    return $http.get('/api/movies/' + id);
+  };
+});
+```
+
+6c. Add the `moviesCtrl` and `moviesDetailCtrl` to `client.js`:
+
+```javascript
+app.controller('moviesCtrl', function(moviesService) {
+  console.log('moviesCtrl is alive!');
+  this.movies = [];
+  moviesService.getMovies()
+  .then( (response) => {
+    this.movies = response.data.movies;
+  })
+  .catch(function(err) {
+    console.log('ERROR:', err);
+  });
+});
+app.controller('moviesDetailCtrl', function($stateParams, moviesService) {
+  console.log('moviesDetailCtrl is alive!');
+  moviesService.getMovie($stateParams.id)
+  .then( (response) => {
+    this.movie = response.data.movie;
+  });
+});
+```
+
+6d. Create the movies index and movies show templates:
+
+```bash
+mkdir public/templates/movies
+touch public/templates/movies/index.html
+touch public/templates/movies/show.html
+```
+
+6e. Put the following content into `public/templates/movies/index.html`:
+
+```html
+{{ public/templates/movies/index.html }}
+```
+
+6f. Put the following content into `public/templates/movies/show.html`:
+
+```html
+{{ public/templates/movies/show.html }}
+```
+
+6g. Add a button to the NavBar for our Movies route:
+
+Edit `views/layout.pug` and add:
+
+```pug
+button
+  a(ui-sref='movies') Movies
+```
+
+6h. Test it out
+
+Use your browser to test out the movies INDEX and SHOW routes.
+
+6i. Save your work:
+
+```bash
+git add -A
+git commit -m "Added INDEX and SHOW Client-Side Movie Routes."
+git tag step6
+```
+
+---

@@ -1,0 +1,7 @@
+<h1>My Favorite Movies</h1>
+
+<ul>
+  <li ng-repeat="movie in $ctrl.movies">
+    <a ui-sref="movieDetail({id: movie._id})">{{ movie.title }} - {{ movie.genre }}</a>
+  </li>
+</ul>

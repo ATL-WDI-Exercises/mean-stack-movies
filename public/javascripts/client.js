@@ -14,12 +14,54 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
     controller: 'aboutCtrl',
     controllerAs: '$ctrl'
   });
+  $stateProvider
+  .state('movies', {
+    url: '/movies',
+    templateUrl: '/templates/movies/index.html',
+    controller: 'moviesCtrl',
+    controllerAs: '$ctrl'
+  });
+  $stateProvider
+  .state('movieDetail', {
+    url: '/movies/:id',
+    templateUrl: '/templates/movies/show.html',
+    controller: 'moviesDetailCtrl',
+    controllerAs: '$ctrl'
+  });
   $urlRouterProvider.otherwise("/");
   // $locationProvider.html5Mode({ enabled: true, requireBase: false });
+});
+app.service('moviesService', function($http) {
+  console.log('moviesService is alive!');
+  this.getMovies = function() {
+    return $http.get('/api/movies');
+  };
+  this.getMovie = function(id) {
+    return $http.get('/api/movies/' + id);
+  };
 });
 app.controller('homeCtrl', function() {
   this.title = 'Welcome to My Movies App';
 });
 app.controller('aboutCtrl', function() {
+  console.log('aboutCtrl is alive!');
   this.title = 'About my Movies App';
+});
+app.controller('moviesCtrl', function(moviesService) {
+  console.log('moviesCtrl is alive!');
+  this.movies = [];
+  moviesService.getMovies()
+  .then( (response) => {
+    this.movies = response.data.movies;
+  })
+  .catch(function(err) {
+    console.log('ERROR:', err);
+  });
+});
+app.controller('moviesDetailCtrl', function($stateParams, moviesService) {
+  console.log('moviesDetailCtrl is alive!');
+  moviesService.getMovie($stateParams.id)
+  .then( (response) => {
+    this.movie = response.data.movie;
+  });
 });
