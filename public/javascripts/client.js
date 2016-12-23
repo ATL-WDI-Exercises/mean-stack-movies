@@ -22,6 +22,13 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
     controllerAs: '$ctrl'
   });
   $stateProvider
+  .state('newMovie', {
+    url: '/movies/new',
+    templateUrl: '/templates/movies/new.html',
+    controller: 'moviesNewCtrl',
+    controllerAs: '$ctrl'
+  });
+  $stateProvider
   .state('movieDetail', {
     url: '/movies/:id',
     templateUrl: '/templates/movies/show.html',
@@ -39,6 +46,9 @@ app.service('moviesService', function($http) {
   this.getMovie = function(id) {
     return $http.get('/api/movies/' + id);
   };
+  this.addMovie = function(movie) {
+    return $http.post('/api/movies', movie);
+  };
 });
 app.controller('homeCtrl', function() {
   this.title = 'Welcome to My Movies App';
@@ -55,7 +65,7 @@ app.controller('moviesCtrl', function(moviesService) {
     this.movies = response.data.movies;
   })
   .catch(function(err) {
-    console.log('ERROR:', err);
+    alert('ERROR: ' + err);
   });
 });
 app.controller('moviesDetailCtrl', function($stateParams, moviesService) {
@@ -63,5 +73,24 @@ app.controller('moviesDetailCtrl', function($stateParams, moviesService) {
   moviesService.getMovie($stateParams.id)
   .then( (response) => {
     this.movie = response.data.movie;
+  })
+  .catch(function(err) {
+    alert('ERROR: ' + err);
   });
+});
+app.controller('moviesNewCtrl', function($state, moviesService) {
+  console.log('moviesNewCtrl is alive!');
+  this.movie = {
+    title: '',
+    genre: ''
+  };
+  this.submit = function() {
+    moviesService.addMovie(this.movie)
+    .then( (response) => {
+      $state.go('movies');
+    })
+    .catch(function(err) {
+      alert('ERROR: ' + err);
+    });
+  };
 });

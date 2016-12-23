@@ -21,6 +21,8 @@ Let's build a MEAN stack app for doing CRUD with movies.
 * [Step 4: Add Some Movie Routes](#step-4-add-some-movie-routes)
 * [Step 5: Add Angular](#step-5-add-angular)
 * [Step 6: Add INDEX and SHOW Client-Side Movie Routes](#step-6-add-index-and-show-client-side-movie-routes)
+* [Step 7: Add NEW  Movie Routes](#step-7-add-new-client-and-create-server-movie-routes)
+* [You Do](#you-do)
 
 ---
 
@@ -264,6 +266,17 @@ router.get('/:id', function(req, res, next) {
   });
 });
 
+// CREATE
+router.post('/', function(req, res, next) {
+  Movie.create(req.body)
+  .then(function(savedMovie) {
+    res.json({ movie: savedMovie });
+  })
+  .catch(function(err) {
+    return next(err);
+  });
+});
+
 module.exports = router;
 ```
 
@@ -360,6 +373,13 @@ app.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
     controllerAs: '$ctrl'
   });
   $stateProvider
+  .state('newMovie', {
+    url: '/movies/new',
+    templateUrl: '/templates/movies/new.html',
+    controller: 'moviesNewCtrl',
+    controllerAs: '$ctrl'
+  });
+  $stateProvider
   .state('movieDetail', {
     url: '/movies/:id',
     templateUrl: '/templates/movies/show.html',
@@ -377,6 +397,9 @@ app.service('moviesService', function($http) {
   this.getMovie = function(id) {
     return $http.get('/api/movies/' + id);
   };
+  this.addMovie = function(movie) {
+    return $http.post('/api/movies', movie);
+  };
 });
 app.controller('homeCtrl', function() {
   this.title = 'Welcome to My Movies App';
@@ -393,7 +416,7 @@ app.controller('moviesCtrl', function(moviesService) {
     this.movies = response.data.movies;
   })
   .catch(function(err) {
-    console.log('ERROR:', err);
+    alert('ERROR: ' + err);
   });
 });
 app.controller('moviesDetailCtrl', function($stateParams, moviesService) {
@@ -401,7 +424,26 @@ app.controller('moviesDetailCtrl', function($stateParams, moviesService) {
   moviesService.getMovie($stateParams.id)
   .then( (response) => {
     this.movie = response.data.movie;
+  })
+  .catch(function(err) {
+    alert('ERROR: ' + err);
   });
+});
+app.controller('moviesNewCtrl', function($state, moviesService) {
+  console.log('moviesNewCtrl is alive!');
+  this.movie = {
+    title: '',
+    genre: ''
+  };
+  this.submit = function() {
+    moviesService.addMovie(this.movie)
+    .then( (response) => {
+      $state.go('movies');
+    })
+    .catch(function(err) {
+      alert('ERROR: ' + err);
+    });
+  };
 });
 ```
 
@@ -547,6 +589,8 @@ touch public/templates/movies/show.html
     <a ui-sref="movieDetail({id: movie._id})">{{ movie.title }} - {{ movie.genre }}</a>
   </li>
 </ul>
+
+<button><a ui-sref="newMovie">Add Movie</button>
 ```
 
 6f. Put the following content into `public/templates/movies/show.html`:
@@ -580,3 +624,137 @@ git tag step6
 ```
 
 ---
+
+## Step 7: Add NEW (client) and CREATE (server) Movie Routes
+
+7a. Add the CREATE route to the server.
+
+Edit `routes/movies.js` and add the CREATE route:
+
+```javascript
+// CREATE
+router.post('/', function(req, res, next) {
+  Movie.create(req.body)
+  .then(function(savedMovie) {
+    res.json({ movie: savedMovie });
+  })
+  .catch(function(err) {
+    return next(err);
+  });
+});
+```
+
+7b. Test it out with `httpie`:
+
+```bash
+http localhost:3000/api/movies
+http POST localhost:3000/api/movies title="The Matrix" genre="Science Fiction"
+http localhost:3000/api/movies
+```
+
+7c. Add the NEW route to the client.
+
+Edit `public/javascripts/client.js` and add the following code.
+
+> NOTE: this route must go *before* the SHOW route to avoid ambiguity in the URL / state routing (just like when we did this with Express routing in Unit 2)
+
+```javascript
+$stateProvider
+.state('newMovie', {
+  url: '/movies/new',
+  templateUrl: '/templates/movies/new.html',
+  controller: 'moviesNewCtrl',
+  controllerAs: '$ctrl'
+});
+```
+
+7d. Add a method to the `moviesService` for adding new movies:
+
+Edit `public/javascripts/client.js` and add the following code to the `moviesService`:
+
+```javascript
+this.addMovie = function(movie) {
+  return $http.post('/api/movies', movie);
+};
+```
+
+7e. Add the `moviesNewCtrl` to the client.
+
+Edit `public/javascripts/client.js` and add:
+
+```javascript
+app.controller('moviesNewCtrl', function($state, moviesService) {
+  console.log('moviesNewCtrl is alive!');
+  this.movie = {
+    title: '',
+    genre: ''
+  };
+  this.submit = function() {
+    moviesService.addMovie(this.movie)
+    .then( (response) => {
+      $state.go('movies');
+    })
+    .catch(function(err) {
+      alert('ERROR: ' + err);
+    });
+  };
+});
+```
+
+7d. Create the NEW template:
+
+```bash
+touch public/templates/movies/new.html
+```
+
+Put the following code in `public/templates/movies/new.html`:
+
+```html
+<h1>New Movie</h1>
+<form ng-submit="$ctrl.submit()">
+  <label>Title: <input type="text" ng-model="$ctrl.movie.title"></label>
+  <br>
+  <label>Genre: <input type="text" ng-model="$ctrl.movie.genre"></label>
+  <br>
+  <input type="submit" value="Submit">
+</form>
+```
+
+7e. Add a button to the INDEX template
+
+Edit `public/templates/movies/index.html` and add the following line at the bottom:
+
+```html
+<button><a ui-sref="newMovie">Add Movie</button>
+```
+
+7f. Test it out
+
+Try to create a new movie.
+
+7g. Save your work:
+
+```bash
+git add -A
+git commit -m "Added NEW and CREATE Movie Routes"
+git tag step7
+```
+
+---
+
+## You Do
+
+* Add the EDIT (client) and the UPDATE (server) routes.
+* Add a DESTROY (server) route
+  - Use a button on the INDEX template that causes the movie to be deleted.
+  - The button should call a Controller method that calls a `moviesService` method that sends an $http.delete request and returns a promise.
+* Break up the `client.js` file into several files:
+
+|          file         |                             contents                             |
+|:---------------------:|:----------------------------------------------------------------:|
+|       client.js       | configures the routes and defines the `homeCtrl` and `aboutCtrl` |
+|   movies-service.js   | defines the `moviesService`                                      |
+| movies-controllers.js | defines the movies controllers                                   |
+
+> NOTE: you will need to add all of these files to `layout.pug` so that they get loaded in the proper order (client.js, movies-service.js, movies-controllers.js).
+

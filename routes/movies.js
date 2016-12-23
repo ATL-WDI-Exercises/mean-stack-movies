@@ -35,4 +35,15 @@ router.get('/:id', function(req, res, next) {
   });
 });
 
+// CREATE
+router.post('/', function(req, res, next) {
+  Movie.create(req.body)
+  .then(function(savedMovie) {
+    res.json({ movie: savedMovie });
+  })
+  .catch(function(err) {
+    return next(err);
+  });
+});
+
 module.exports = router;
